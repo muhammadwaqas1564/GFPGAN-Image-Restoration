@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GFPGAN Web App</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .result-container {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+    }
+
+    .result-item {
+      margin: 10px;
+      border: 2px solid #c8102e;
+      padding: 10px;
+      text-align: center;
+      background: #333;
+      border-radius: 8px;
+    }
+
+    .result-item img {
+      max-width: 100%;
+      height: auto;
+      border-radius: 6px;
+    }
+
+    .result-item h2 {
+      font-size: 1.2em;
+      margin: 10px 0;
+      color: #c8102e;
+    }
+
+    .footer {
+      text-align: center;
+      margin-top: 20px;
+      border-top: 2px solid #c8102e;
+      padding-top: 10px;
+    }
+
+    .back-link {
+      font-size: 0.9em;
+      color: #c8102e;
+      text-decoration: none;
+      border: 1px solid #c8102e;
+      border-radius: 4px;
+      padding: 5px 10px;
+      background: #111;
+      transition: background 0.3s, color 0.3s;
+    }
+
+    .back-link:hover {
+      background: #c8102e;
+      color: #fff;
+    }
+
+    .banner {
+      padding: 100px 0;
+    }
+
+    .box {
+      background: #eeeeee;
+      padding: 100px 50px;
+      border-radius: 20px;
+      width: 75%;
+      margin: 0 auto;
+    }
+
+    .box h1 {
+      font-size: 36px;
+      line-height: 1em;
+      color: #111;
+      margin: 0 0 40px 0;
+    }
+
+    .box form .form-control {
+      margin-bottom: 20px;
+    }
+
+    .box form .form-control input {
+      width: fit-content;
+      border: 1px solid #111;
+      padding: 8px 15px;
+      border-radius: 5px;
+    }
+
+    .box form .form-submit input {
+      background: #174484;
+      outline: none;
+      box-shadow: none;
+      border: 1px solid #174484;
+      color: #fff;
+      font-size: 18px;
+      padding: 10px 30px;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.3s ease-in-out;
+    }
+
+    .box form .form-submit input:hover {
+      background: #bf1b21;
+      border: 1px solid #bf1b21;
+    }
+
+    .img-box {
+      text-align: center;
+      margin-bottom: 50px;
+    }
+
+    .loading-container {
+      display: none;
+      text-align: center;
+      margin-top: 20px;
+    }
+
+    .loading-bar {
+      width: 100%;
+      background-color: #ddd;
+      border-radius: 5px;
+      height: 20px;
+      margin: 10px 0;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .loading-bar div {
+      width: 0;
+      height: 100%;
+      background-color: #c8102e;
+      position: absolute;
+      top: 0;
+      left: 0;
+      transition: width 0.4s ease-in-out;
+    }
+
+    .loading-text {
+      font-size: 1.2em;
+      color: #c8102e;
+    }
+  </style>
+</head>
+
+<body>
+  <section class="banner">
+    <div class="container">
+      <div class="box">
+        <div class="img-box">
+          <img src="{{ url_for('static', filename='images/logo.png') }}" alt="Logo">
+        </div>
+        <h1>Upload Image for Restoration</h1>
+        <form id="uploadForm" action="/upload" method="post" enctype="multipart/form-data">
+          <div class="form-control">
+            <input type="file" name="file" accept="image/*">
+          </div>
+          <div class="form-submit">
+            <input type="submit" value="Submit">
+          </div>
+        </form>
+        <div class="loading-container" id="loading">
+          <div class="loading-text">Processing...</div>
+          <div class="loading-bar">
+            <div id="loading-bar-progress"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <script>
+    document.getElementById('uploadForm').onsubmit = function(event) {
+      event.preventDefault();
+      const formData = new FormData(this);
+      const xhr = new XMLHttpRequest();
+      const loading = document.getElementById('loading');
+      const progressBar = document.getElementById('loading-bar-progress');
+
+      loading.style.display = 'block';
+      xhr.open('POST', '/upload', true);
+
+      xhr.upload.onprogress = function(event) {
+        if (event.lengthComputable) {
+          const percentComplete = Math.round((event.loaded / event.total) * 100);
+          progressBar.style.width = percentComplete + '%';
+        }
+      };
+
+      xhr.onload = function() {
+        if (xhr.status === 200) {
+          const response = JSON.parse(xhr.responseText);
+          if (response.status === 'success') {
+            window.location.href = response.redirect_url;
+          } else {
+            alert('An error occurred');
+          }
+        } else {
+          alert('An error occurred');
+        }
+      };
+
+      xhr.send(formData);
+    };
+  </script>
+</body>
+
+</html>

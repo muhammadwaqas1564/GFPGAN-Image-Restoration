@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Results</title>
+
+</head>
+<style>
+	body {
+		font-family: Arial, sans-serif;
+		margin: 0;
+		padding: 0;
+	}
+
+	.container {
+		max-width: 1200px;
+		margin: 0 auto;
+	}
+
+	h1 {
+		font-size: 36px;
+		line-height: 1em;
+		color: #111;
+		margin: 0 0 40px 0;
+	}
+
+	h2 {
+		font-size: 24px;
+		line-height: 1em;
+		color: #111;
+		margin: 0 0 40px 0;
+		text-align: center;
+	}
+
+	.text-center {
+		text-align: center;
+	}
+
+	.banner {
+		padding: 100px 0;
+	}
+
+	.box {
+		background: #eeeeee;
+		padding: 100px 50px;
+		border-radius: 20px;
+		width: 75%;
+		margin: 0 auto;
+	}
+
+	.img-box {
+		text-align: center;
+		margin-bottom: 50px;
+	}
+
+	.result-container {
+		display: flex;
+		flex-wrap: wrap;
+		justify-content: space-between;
+	}
+
+	.result-item {
+		background: #1c447d;
+		padding: 50px 30px;
+		border-radius: 12px;
+		text-align: center;
+		width: 40%;
+		margin: 0 auto 50px;
+		transition: all .3s ease-in-out;
+	}
+
+	.result-item:last-child {
+		width: 100%;
+	}
+
+	.result-item:hover {
+		transform: translateY(-3px);
+		box-shadow: 0 22px 20px -20px #000000c7;
+		background: #bf1b21;
+	}
+
+	.result-item h2 {
+		color: #fff;
+	}
+
+	.result-item .img-container {
+		height: 300px;
+		width: 100%;
+		overflow: hidden;
+		border-radius: 8px;
+	}
+
+	.result-item .img-container img {
+		height: 100%;
+		width: 100%;
+		object-fit: cover;
+		transition: all 0.3s ease-in-out;
+		object-position: top;
+	}
+
+	.result-item:hover .img-container img {
+		transform: scale(1.03);
+	}
+
+	.back-link {
+		background: #174484;
+		outline: none;
+		box-shadow: none;
+		border: 1px solid #174484;
+		color: #fff;
+		font-size: 18px;
+		padding: 10px 30px;
+		border-radius: 8px;
+		cursor: pointer;
+		transition: all 0.3s ease-in-out;
+		text-decoration: none;
+	}
+
+	.back-link:hover {
+		background: #bf1b21;
+		border: 1px solid #bf1b21;
+	}
+</style>
+
+<body>
+	<section class="banner">
+		<div class="container">
+			<div class="box">
+				<div class="img-box">
+					<img src="{{ url_for('static', filename='images/logo.png') }}" alt="Logo">
+				</div>
+				<h1 class="text-center">Image Restoration Team Gamma</h1>
+				<div class="result-container">
+					<!-- Display the restored image -->
+					<div class="result-item">
+						<h2>Restored Image</h2>
+						<div class="img-container">
+							<img src="{{ url_for('static', filename='results/restored_imgs/' + filename) }}" alt="Restored Image">
+						</div>
+					</div>
+
+					<!-- Display cropped faces -->
+					{% if cropped_faces %}
+					<div class="result-item">
+						<h2>Cropped Faces</h2>
+						{% for face in cropped_faces %}
+						<div class="img-container">
+							<img src="{{ url_for('static', filename='results/cropped_faces/' + face) }}" alt="Cropped Face">
+						</div>
+						{% endfor %}
+					</div>
+					{% endif %}
+
+					<!-- Display restored faces -->
+					{% if restored_faces %}
+					<div class="result-item">
+						<h2>Restored Faces</h2>
+						{% for face in restored_faces %}
+						<div class="img-container">
+							<img src="{{ url_for('static', filename='results/restored_faces/' + face) }}" alt="Restored Face">
+						</div>
+						{% endfor %}
+					</div>
+					{% endif %}
+
+					<!-- Display comparison images -->
+					{% if comparisons %}
+					<div class="result-item">
+						<h2>Comparisons</h2>
+						{% for cmp in comparisons %}
+						<div class="img-container">
+							<img src="{{ url_for('static', filename='results/cmp/' + cmp) }}" alt="Comparison">
+						</div>
+						{% endfor %}
+					</div>
+					{% endif %}
+				</div>
+				<div class="text-center">
+					<a class="back-link" href="{{ url_for('index') }}">Go back</a>
+				</div>
+			</div>
+		</div>
+	</section>
+</body>
+
+</html>
